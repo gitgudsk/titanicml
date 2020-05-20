@@ -38,39 +38,35 @@ def main():
     # fill the missing values
     nimp = SimpleImputer(strategy="median")
 
+    # columns with numerical data
     num_cols = X_train.select_dtypes(exclude="object").columns
+    # columns with non-numerical data
     cat_cols = X_train.select_dtypes(include="object").columns
 
     cimp = SimpleImputer(strategy="most_frequent")
-
-    """
-    X_train[cat_cols] = cimp.fit_transform(X_train[cat_cols])
-    print(X_train[num_cols].head())
-    X_train[num_cols] = nimp.fit_transform(X_train[num_cols])
-    print(X_train.head())
-    """
-
     ohe = OneHotEncoder(handle_unknown="ignore")
 
+    # Transforms columns with non-numerical data
     cat_transformer = Pipeline(steps=[
         ("impute", cimp),
         ("encode", ohe)
     ])
 
+    # Transform numerical and non-numerical columns separately
     col_trsfmr = ColumnTransformer(transformers=[
         ("num_vars", nimp, num_cols),
         ("cat_vars", cat_transformer, cat_cols)
     ])
 
-    clf = RandomForestClassifier(n_estimators=100, n_jobs=4)
 
+    rndm_frst = RandomForestClassifier(n_estimators=100, n_jobs=4)
 
-    pipe = Pipeline(steps=[
+    classifier = Pipeline(steps=[
         ("preprocess", col_trsfmr),
-        ("classify", clf)
+        ("classify", rndm_frst)
     ])
 
-    pipe.fit(X_train, y_train)
+    classifier.fit(X_train, y_train)
 
 
 
