@@ -44,14 +44,23 @@ def write_output(y_test, input_test):
 def main():
     input_train, input_test = read_input()
 
+    # number of unique values in the columns
+    uniqs = input_train.nunique()
+    # number of null values in the columns
+    nulls = pd.isna(input_train).sum()
+
+    print("Unique values by column \n", uniqs, "\n")
+    print("Null values by column \n", nulls, "\n")
+
     # "Survived" column of the data, the prediction target
     y_train_all = input_train["Survived"]
-    # Drop the "Survived" column and columns that have too many unique values to help with predictions
+    # Drop the "Survived" column from the trainig data
+    # and columns that have too many unique or null values to help with predictions
     X_train_all = input_train.drop(columns=["Survived", "Name", "Ticket", "Cabin"], axis=1)
 
-    X_train, X_valid, y_train, y_valid = train_test_split(X_train_all, y_train_all, test_size=0.2, random_state=0)
-
     X_test = input_test.drop(columns=["Name", "Ticket", "Cabin"], axis=1)
+
+    X_train, X_valid, y_train, y_valid = train_test_split(X_train_all, y_train_all, test_size=0.2, random_state=0)
 
     # fill the missing values
     nimp = SimpleImputer(strategy="median")
@@ -62,7 +71,7 @@ def main():
     cat_cols = X_train.select_dtypes(include="object").columns
 
     cimp = SimpleImputer(strategy="most_frequent")
-    ohe = OneHotEncoder(handle_unknown="ignore")
+    ohe = OneHotEncoder()
 
     # Transforms columns with non-numerical data
     cat_transformer = Pipeline(steps=[
