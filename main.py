@@ -11,10 +11,10 @@ from matplotlib import pyplot as plt
 from sklearn.model_selection import train_test_split
 from sklearn.impute import SimpleImputer
 from sklearn.pipeline import Pipeline
-from sklearn.ensemble import RandomForestClassifier, GradientBoostingClassifier, AdaBoostClassifier
+from sklearn.ensemble import RandomForestClassifier, GradientBoostingClassifier, AdaBoostClassifier, ExtraTreesClassifier
 from sklearn.compose import ColumnTransformer
 from sklearn.preprocessing import OneHotEncoder
-from sklearn.metrics import precision_score
+from sklearn.metrics import precision_score, roc_auc_score
 from copy import deepcopy
 
 TRAIN_LOC = "./input/train.csv"
@@ -115,9 +115,12 @@ def main():
     ensemble_classifiers = [
         RandomForestClassifier(),
         GradientBoostingClassifier(),
-        AdaBoostClassifier()
+        AdaBoostClassifier(),
+        ExtraTreesClassifier()
     ]
 
+    # Used to keep track of the best classifier
+    # [Highest precision score, number of trees, classifier used]
     best_score = [0, 0, 0]
 
     # grid search the best parameters
