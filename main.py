@@ -1,5 +1,12 @@
+# For https://www.kaggle.com/c/titanic
+# Tries to predict who survived the Titanic shipwreck using machine learning
+# on the data provided by the competition host.
+# Writes the predictions to a csv-file.
+
+
 import numpy as np
 import pandas as pd
+from matplotlib import pyplot as plt
 
 from sklearn.model_selection import train_test_split
 from sklearn.impute import SimpleImputer
@@ -41,6 +48,20 @@ def write_output(y_test, input_test):
     y_test.to_csv(path_or_buf=WRITE_LOC, index=False)
 
 
+def plot_bar(values, labels, title):
+    """
+    Visualisation of data
+    :param values: list of scalars, heights of the data bars
+    :param labels: list of strings, labels of the data bars
+    :param title: string, title for the window
+    :return:
+    """
+    plt.bar([x for x in range(len(values))], values, tick_label=labels)
+    plt.title(title)
+    plt.show()
+
+
+
 def main():
     input_train, input_test = read_input()
 
@@ -49,7 +70,10 @@ def main():
     # number of null values in the columns
     nulls = pd.isna(input_train).sum()
 
+    plot_bar(uniqs, input_train.columns, "Uniques")
     print("Unique values by column \n", uniqs, "\n")
+
+    plot_bar(nulls, input_train.columns, "Null values")
     print("Null values by column \n", nulls, "\n")
 
     # "Survived" column of the data, the prediction target
