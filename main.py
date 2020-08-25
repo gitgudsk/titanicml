@@ -56,7 +56,8 @@ def plot_bar(values, labels, title):
     :param title: string, title for the window
     :return:
     """
-    plt.bar([x for x in range(len(values))], values, tick_label=labels)
+    plt.bar([x for x in range(len(values))], values)
+    plt.xticks([x for x in range(len(values))], labels, rotation=90)
     plt.title(title)
     plt.show()
 
@@ -123,6 +124,9 @@ def main():
     # [Highest precision score, number of trees, classifier used]
     best_score = [0, 0, 0]
 
+    scores = []
+    scorelabels = []
+
     # grid search the best parameters
     for clf in ensemble_classifiers:
         clf.n_jobs = THREADS
@@ -141,12 +145,18 @@ def main():
             y_pred = classifier.predict(X_valid)
             score = precision_score(y_valid, y_pred)
 
+            scores.append(score)
+            scorelabels.append(str(clf.__class__.__name__) + " (" + str(n_ests) + ")")
+
             if score > best_score[0]:
                 best_score[0] = score
                 best_score[1] = n_ests
                 best_score[2] = deepcopy(clf)
 
     print(best_score)
+
+    # plots all accuracies
+    plot_bar(scores, scorelabels, "Accuracies")
 
 
     # Use the best classifier to predict the final results
